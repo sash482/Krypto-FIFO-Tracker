@@ -585,6 +585,7 @@ function renderPositions() {
   let totalInvest = 0;
   let totalSells = 0;
 
+  // Summen Käufe/Verkäufe (historisch)
   for (const t of trades) {
     if (t.type === "BUY") {
       totalInvest += t.priceEur * t.amount + (t.feeEur || 0);
@@ -593,6 +594,9 @@ function renderPositions() {
     }
   }
 
+  // neuer Gesamtwert aller Bestände (nach aktuellem Kurs)
+  let totalCurrentValueAllAssets = 0;
+
   for (const asset of assets) {
     const lots = buildLots(trades, asset);
     const { frei, steuerpflichtig } = splitLotsByHaltefrist(lots, today);
@@ -600,12 +604,26 @@ function renderPositions() {
     const freiAmount = frei.reduce((s,l)=>s+l.remainingAmount,0);
     const steuerAmount = steuerpflichtig.reduce((s,l)=>s+l.remainingAmount,0);
 
+    const currentPrice = latestPrices[asset] || 0;
+    const totalValue = currentPrice ? total * currentPrice : 0;
+    const freiValue = currentPrice ? freiAmount * currentPrice : 0;
+
+    totalCurrentValueAllAssets += totalValue;
+
+    const displayTotal = currentPrice
+      ? `${total.toFixed(8)} (${totalValue.toFixed(2)} EUR)`
+      : `${total.toFixed(8)}`;
+    const displayFrei = currentPrice
+      ? `${freiAmount.toFixed(8)} (${freiValue.toFixed(2)} EUR)`
+      : `${freiAmount.toFixed(8)}`;
+    const displaySteuer = `${steuerAmount.toFixed(8)}`;
+
     const tr = document.createElement("tr");
     tr.innerHTML = `
       <td>${asset}</td>
-      <td>${total.toFixed(8)}</td>
-      <td>${freiAmount.toFixed(8)}</td>
-      <td>${steuerAmount.toFixed(8)}</td>
+      <td>${displayTotal}</td>
+      <td>${displayFrei}</td>
+      <td>${displaySteuer}</td>
     `;
     tbody.appendChild(tr);
   }
@@ -613,7 +631,10 @@ function renderPositions() {
   const totalsInfo = document.getElementById("totalsInfo");
   totalsInfo.textContent =
     `Gesamtsumme Käufe (inkl. Gebühren): ${totalInvest.toFixed(2)} EUR | ` +
-    `Gesamtsumme Verkäufe (nach Gebühren): ${totalSells.toFixed(2)} EUR`;
+    `Gesamtsumme Verkäufe (nach Gebühren): ${totalSells.toFixed(2)} EUR` +
+    (totalCurrentValueAllAssets > 0
+      ? ` | Gesamtwert Bestände (aktuell): ${totalCurrentValueAllAssets.toFixed(2)} EUR`
+      : "");
 
   const { realizedProfit, realizedCostBasis } = computeRealizedPnLAll();
   const pnlInfo = document.getElementById("pnlInfo");
@@ -759,6 +780,7 @@ async function fetchCurrentPrices() {
     document.getElementById("pricesInfo").innerHTML = `<strong>Kurse:</strong> ${priceStrings}`;
 
     renderPortfolioValues();
+    renderPositions(); // neu: Positions-Tabelle mit Kurswerten aktualisieren
 
     const simAsset = document.getElementById("simAsset").value.trim().toUpperCase();
     if (latestPrices[simAsset]) {
