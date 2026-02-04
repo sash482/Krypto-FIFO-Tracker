@@ -1,262 +1,255 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Krypto FIFO Steuer-Tracker</title>
-  <style>
-    body {
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      max-width: 1100px;
-      margin: 20px auto;
-      padding: 0 10px;
-    }
-    h1, h2 { margin-top: 0; }
-    input, select, button {
-      margin: 4px;
-      padding: 4px 6px;
-      font-size: 14px;
-    }
-    button { cursor: pointer; }
-    table {
-      border-collapse: collapse;
-      width: 100%;
-      margin-top: 10px;
-      font-size: 13px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 4px;
-      text-align: left;
-    }
-    th { background: #f5f5f5; }
-    .section {
-      border: 1px solid #ddd;
-      padding: 10px;
-      margin: 10px 0;
-      border-radius: 4px;
-      background: #fafafa;
-    }
-    .small { font-size: 12px; color: #555; }
-    .danger { color: #b00020; }
-    .success { color: #006400; }
-    .flex {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-      gap: 4px;
-    }
-    @media (max-width: 800px) {
-      table { font-size: 11px; }
-      input, select, button { font-size: 12px; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Krypto FIFO Steuer-Tracker</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1100px;
+            margin: 20px auto;
+            padding: 0 10px;
+        }
+        h1, h2 {
+            margin-top: 0;
+        }
+        input, select, button {
+            margin: 4px;
+            padding: 4px 6px;
+            font-size: 14px;
+        }
+        button {
+            cursor: pointer;
+        }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 4px;
+            text-align: left;
+        }
+        th {
+            background: #f5f5f5;
+        }
+        .section {
+            border: 1px solid #ddd;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            background: #fafafa;
+        }
+        .small {
+            font-size: 12px;
+            color: #555;
+        }
+        .danger {
+            color: #b00020;
+        }
+        .success {
+            color: #006400;
+        }
+        .flex {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+        }
+        @media (max-width: 800px) {
+            table {
+                font-size: 11px;
+            }
+            input, select, button {
+                font-size: 12px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <h1>Krypto FIFO Steuer-Tracker</h1>
+
+<h1>Krypto FIFO Steuer-Tracker</h1>
+<p class="small">
+  Hinweis: Vereinfachtes Tool nach deutschem Recht (Haltefrist 1 Jahr, private Veräußerungsgeschäfte). Keine steuerliche Beratung.
+</p>
+
+<!-- Trades erfassen -->
+<div class="section">
+  <h2>Trade hinzufügen</h2>
+  <form id="tradeForm" class="flex">
+    <label>Datum <input type="date" id="date" required></label>
+    <label>Typ
+      <select id="type">
+        <option value="BUY">Kauf</option>
+        <option value="SELL">Verkauf</option>
+      </select>
+    </label>
+    <label>Asset
+      <select id="asset" required style="width:120px;">
+        <option value="BTC">Bitcoin (BTC)</option>
+        <option value="ETH">Ethereum (ETH)</option>
+        <option value="BNB">BNB</option>
+        <option value="SOL">Solana (SOL)</option>
+        <option value="XRP">XRP</option>
+        <option value="ADA">Cardano (ADA)</option>
+        <option value="DOGE">Dogecoin (DOGE)</option>
+        <option value="TON">Toncoin (TON)</option>
+        <option value="DOT">Polkadot (DOT)</option>
+        <option value="AVAX">Avalanche (AVAX)</option>
+        <option value="TRX">TRON</option>
+        <option value="MATIC">Polygon (MATIC)</option>
+        <option value="LTC">Litecoin (LTC)</option>
+        <option value="BCH">Bitcoin Cash (BCH)</option>
+        <option value="UNI">Uniswap (UNI)</option>
+        <option value="LINK">Chainlink (LINK)</option>
+        <option value="ATOM">Cosmos (ATOM)</option>
+        <option value="XLM">Stellar (XLM)</option>
+        <option value="SHIB">Shiba Inu (SHIB)</option>
+        <option value="APT">Aptos (APT)</option>
+        <option value="USDT">Tether (USDT)</option>
+        <option value="USDC">USD Coin (USDC)</option>
+      </select>
+    </label>
+    <label>Menge <input type="number" step="0.00000001" id="amount" required style="width:110px;"></label>
+    <label>Preis/Einheit (EUR) <input type="number" step="0.01" id="price" required style="width:110px;"></label>
+    <label>Gebühr gesamt (EUR) <input type="number" step="0.01" id="fee" style="width:90px;"></label>
+    <button type="submit">Speichern</button>
+    <button type="button" id="clearAll" class="danger">Alle Daten löschen</button>
+  </form>
+  <p class="small">Wähle das Asset aus der Dropdown-Liste. Die wichtigsten Kryptowährungen sind verfügbar.</p>
+</div>
+
+<!-- Import / Export -->
+<div class="section">
+  <h2>Backup & Austausch (JSON)</h2>
+  <div class="flex">
+    <button id="exportJson">Daten als JSON exportieren</button>
+    <button id="importJson">Daten aus JSON importieren</button>
+    <input type="file" id="importFile" accept=".json,application/json" style="display:none;">
+  </div>
   <p class="small">
-    Hinweis: Vereinfachtes Tool nach deutschem Recht (Haltefrist 1 Jahr, private Veräußerungsgeschäfte). Keine steuerliche Beratung.
+    Export: Lädt eine JSON‑Datei mit allen Trades herunter.<br>
+    Import: Erwartet eine Datei mit einem Array von Trade‑Objekten wie <code>[{ "date": "...", "type": "BUY", "asset": "...", "amount": 0.1, "priceEur": 30000, "feeEur": 0 }, ...]</code>.
   </p>
+  <p class="small" id="importExportStatus"></p>
+</div>
 
-  <!-- Trades erfassen -->
-  <div class="section">
-    <h2>Trade hinzufügen</h2>
-    <form id="tradeForm" class="flex">
-      <label>Datum:
-        <input type="date" id="date" required>
-      </label>
-      <label>Typ:
-        <select id="type">
-          <option value="BUY">Kauf</option>
-          <option value="SELL">Verkauf</option>
-        </select>
-      </label>
-      <label>Asset:
-        <select id="asset" required style="width:120px">
-          <option value="BTC">Bitcoin (BTC)</option>
-          <option value="ETH">Ethereum (ETH)</option>
-          <option value="BNB">BNB</option>
-          <option value="SOL">Solana (SOL)</option>
-          <option value="XRP">XRP</option>
-          <option value="ADA">Cardano (ADA)</option>
-          <option value="DOGE">Dogecoin (DOGE)</option>
-          <option value="TON">Toncoin (TON)</option>
-          <option value="DOT">Polkadot (DOT)</option>
-          <option value="AVAX">Avalanche (AVAX)</option>
-          <option value="TRX">TRON</option>
-          <option value="MATIC">Polygon (MATIC)</option>
-          <option value="LTC">Litecoin (LTC)</option>
-          <option value="BCH">Bitcoin Cash (BCH)</option>
-          <option value="UNI">Uniswap (UNI)</option>
-          <option value="LINK">Chainlink (LINK)</option>
-          <option value="ATOM">Cosmos (ATOM)</option>
-          <option value="XLM">Stellar (XLM)</option>
-          <option value="SHIB">Shiba Inu (SHIB)</option>
-          <option value="APT">Aptos (APT)</option>
-          <option value="USDT">Tether (USDT)</option>
-          <option value="USDC">USD Coin (USDC)</option>
-        </select>
-      </label>
-      <label>Menge:
-        <input type="number" step="0.00000001" id="amount" required style="width:110px">
-      </label>
-      <label>Preis/Einheit (EUR):
-        <input type="number" step="0.01" id="price" required style="width:110px">
-      </label>
-      <label>Gebühr gesamt (EUR):
-        <input type="number" step="0.01" id="fee" style="width:90px">
-      </label>
-      <button type="submit">Speichern</button>
-      <button type="button" id="clearAll" class="danger">Alle Daten löschen</button>
-    </form>
-    <p class="small">
-      Wähle das Asset aus der Dropdown-Liste. Die wichtigsten Kryptowährungen sind verfügbar.
-    </p>
-  </div>
+<!-- Trades-Tabelle -->
+<div class="section">
+  <h2>Trades</h2>
+  <table id="tradesTable">
+    <thead>
+      <tr>
+        <th>Datum</th>
+        <th>Typ</th>
+        <th>Asset</th>
+        <th>Menge</th>
+        <th>Preis/EUR</th>
+        <th>Gebühr/EUR</th>
+        <th>Gesamtpreis/EUR</th>
+        <th>Aktionen</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</div>
 
-  <!-- Import / Export -->
-  <div class="section">
-    <h2>Backup & Austausch (JSON)</h2>
-    <div class="flex">
-      <button id="exportJson">Daten als JSON exportieren</button>
-      <button id="importJson">Daten aus JSON importieren</button>
-      <input type="file" id="importFile" accept=".json,application/json" style="display:none">
-    </div>
-    <p class="small">
-      Export: Lädt eine JSON‑Datei mit allen Trades herunter.<br>
-      Import: Erwartet eine Datei mit einem Array von Trade‑Objekten wie
-      <code>[{ "date": "...", "type": "BUY", "asset": "...", "amount": 0.1, "priceEur": 30000, "feeEur": 0 }, ...]</code>.
-    </p>
-    <p class="small" id="importExportStatus"></p>
+<!-- Bestände und Haltefrist; Summen; realisierte Rendite -->
+<div class="section">
+  <h2>Bestände & steuerfrei veräußerbar</h2>
+  <div class="flex">
+    <label>Stichtag <input type="date" id="today"></label>
+    <button id="refreshPositions">Neu berechnen</button>
   </div>
+  <table id="positionsTable">
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Gesamtmenge</th>
+        <th>Menge ≥ 1 Jahr (steuerfrei)</th>
+        <th>Menge &lt; 1 Jahr (steuerpflichtig)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="totalsInfo" class="small"></p>
+  <p id="pnlInfo" class="small"></p>
+</div>
 
-  <!-- Trades-Tabelle -->
-  <div class="section">
-    <h2>Trades</h2>
-    <table id="tradesTable">
-      <thead>
-        <tr>
-          <th>Datum</th>
-          <th>Typ</th>
-          <th>Asset</th>
-          <th>Menge</th>
-          <th>Preis/EUR</th>
-          <th>Gebühr/EUR</th>
-          <th>Gesamtpreis/EUR</th>
-          <th>Aktionen</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-  </div>
+<!-- Jahresauswertung -->
+<div class="section">
+  <h2>Jahresauswertung: realisierte und nicht realisierte Gewinne</h2>
+  <table id="yearlyPnlTable">
+    <thead>
+      <tr>
+        <th>Jahr</th>
+        <th>Realisierter Gewinn/Verlust (EUR)</th>
+        <th>Nicht realisierte Gewinne/Verluste (EUR)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p class="small">
+    Hinweis: Realisiert = Verkäufe des Jahres nach FIFO. Nicht realisiert = Bestand zum 31.12. des Jahres, bewertet mit aktuellen Kursen (CoinGecko), ohne Freigrenze/Steuersätze.
+  </p>
+</div>
 
-  <!-- Bestände und Haltefrist + Summen + realisierte Rendite -->
-  <div class="section">
-    <h2>Bestände & steuerfrei veräußerbar</h2>
-    <div class="flex">
-      <label>Stichtag:
-        <input type="date" id="today">
-      </label>
-      <button id="refreshPositions">Neu berechnen</button>
-    </div>
-    <table id="positionsTable">
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Gesamtmenge</th>
-          <th>Menge &ge; 1 Jahr (steuerfrei)</th>
-          <th>Menge &lt; 1 Jahr (steuerpflichtig)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <p id="totalsInfo" class="small"></p>
-    <p id="pnlInfo" class="small"></p>
-  </div>
+<!-- Portfolio-Werte nach aktuellem Kurs -->
+<div class="section">
+  <h2>Portfolio-Wert & Rendite (nach aktuellem Kurs)</h2>
+  <table id="valueTable">
+    <thead>
+      <tr>
+        <th>Asset</th>
+        <th>Bestand</th>
+        <th>Eingesetztes Kapital (Bestand)</th>
+        <th>Aktueller Wert</th>
+        <th>Unrealisierter Gewinn/Verlust</th>
+        <th>Rendite (Bestand)</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+  <p id="valueTotals" class="small"></p>
+</div>
 
-  <!-- Jahresauswertung -->
-  <div class="section">
-    <h2>Jahresauswertung (realisierte und nicht realisierte Gewinne)</h2>
-    <table id="yearlyPnlTable">
-      <thead>
-        <tr>
-          <th>Jahr</th>
-          <th>Realisierter Gewinn/Verlust (EUR)</th>
-          <th>Nicht realisierte Gewinne/Verluste (EUR)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <p class="small">
-      Hinweis: Realisiert = Verkäufe des Jahres nach FIFO. Nicht realisiert = Bestand zum 31.12. des Jahres, bewertet mit aktuellen Kursen (CoinGecko), ohne Freigrenze/Steuersätze.
-    </p>
+<!-- Verkaufssimulation -->
+<div class="section">
+  <h2>Verkauf simulieren (FIFO)</h2>
+  <div class="flex">
+    <label>Stichtag <input type="date" id="simToday"></label>
+    <label>Asset <input type="text" id="simAsset" value="BTC" style="width:70px;"></label>
+    <label>Menge Verkauf <input type="number" step="0.00000001" id="simAmount" style="width:110px;"></label>
+    <label>Verkaufspreis/Einheit (EUR) <input type="number" step="0.01" id="simPrice" style="width:110px;"></label>
+    <button id="runSimulation">Simulieren</button>
   </div>
+  <div id="simResult" class="small"></div>
+</div>
 
-  <!-- Portfolio-Werte nach aktuellem Kurs -->
-  <div class="section">
-    <h2>Portfolio-Wert & Rendite (nach aktuellem Kurs)</h2>
-    <table id="valueTable">
-      <thead>
-        <tr>
-          <th>Asset</th>
-          <th>Bestand</th>
-          <th>Eingesetztes Kapital (Bestand)</th>
-          <th>Aktueller Wert</th>
-          <th>Unrealisierter Gewinn/Verlust</th>
-          <th>Rendite (Bestand)</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <p id="valueTotals" class="small"></p>
+<!-- Echtzeitkurse per CoinGecko + Auto-Refresh -->
+<div class="section">
+  <h2>Aktuelle Kurse (CoinGecko)</h2>
+  <div class="flex">
+    <label>API‑Basis‑URL <input type="text" id="priceApiBase" value="https://api.coingecko.com/api/v3" style="width:260px;"></label>
+    <label>Fiat‑Währung <input type="text" id="priceCurrency" value="eur" style="width:70px;"></label>
+    <label>Intervall
+      <select id="priceInterval">
+        <option value="0">Aus</option>
+        <option value="10000">10 Sekunden</option>
+        <option value="30000" selected>30 Sekunden</option>
+        <option value="60000">60 Sekunden</option>
+      </select>
+    </label>
+    <button id="fetchPrices">Kurse jetzt abrufen</button>
   </div>
-
-  <!-- Verkaufssimulation -->
-  <div class="section">
-    <h2>Verkauf simulieren (FIFO)</h2>
-    <div class="flex">
-      <label>Stichtag:
-        <input type="date" id="simToday">
-      </label>
-      <label>Asset:
-        <input type="text" id="simAsset" value="BTC" style="width:70px">
-      </label>
-      <label>Menge Verkauf:
-        <input type="number" step="0.00000001" id="simAmount" style="width:110px">
-      </label>
-      <label>Verkaufspreis/Einheit (EUR):
-        <input type="number" step="0.01" id="simPrice" style="width:110px">
-      </label>
-      <button id="runSimulation">Simulieren</button>
-    </div>
-    <div id="simResult" class="small"></div>
-  </div>
-
-  <!-- Echtzeitkurse per CoinGecko + Auto-Refresh -->
-  <div class="section">
-    <h2>Aktuelle Kurse (CoinGecko)</h2>
-    <div class="flex">
-      <label>API‑Basis‑URL:
-        <input type="text" id="priceApiBase" value="https://api.coingecko.com/api/v3" style="width:260px">
-      </label>
-      <label>Fiat‑Währung:
-        <input type="text" id="priceCurrency" value="eur" style="width:70px">
-      </label>
-      <label>Intervall:
-        <select id="priceInterval">
-          <option value="0">Aus</option>
-          <option value="10000">10 Sekunden</option>
-          <option value="30000" selected>30 Sekunden</option>
-          <option value="60000">60 Sekunden</option>
-        </select>
-      </label>
-      <button id="fetchPrices">Kurse jetzt abrufen</button>
-    </div>
-    <p class="small">
-      Zuordnung zu CoinGecko‑IDs ist für die gängigen Coins vordefiniert (BTC, ETH, BNB, SOL, XRP, ADA, DOGE, TON, DOT, AVAX, TRX, MATIC, LTC, BCH, UNI, LINK, ATOM, XLM, SHIB, APT, USDT, USDC).
-    </p>
-    <div id="pricesInfo" class="small"></div>
-  </div>
+  <p class="small">
+    Zuordnung zu CoinGecko‑IDs ist für die gängigen Coins vordefiniert (BTC, ETH, BNB, SOL, XRP, ADA, DOGE, TON, DOT, AVAX, TRX, MATIC, LTC, BCH, UNI, LINK, ATOM, XLM, SHIB, APT, USDT, USDC).
+  </p>
+  <div id="pricesInfo" class="small"></div>
+</div>
 
 <script>
 let trades = [];
@@ -264,68 +257,64 @@ let latestPrices = {};
 let priceIntervalHandle = null;
 
 const assetIdMap = {
-  "BTC": "bitcoin",
-  "ETH": "ethereum",
-  "BNB": "binancecoin",
-  "SOL": "solana",
-  "XRP": "ripple",
-  "ADA": "cardano",
-  "DOGE": "dogecoin",
-  "TON": "the-open-network",
-  "DOT": "polkadot",
-  "AVAX": "avalanche-2",
-  "TRX": "tron",
-  "MATIC": "matic-network",
-  "LTC": "litecoin",
-  "BCH": "bitcoin-cash",
-  "UNI": "uniswap",
-  "LINK": "chainlink",
-  "ATOM": "cosmos",
-  "XLM": "stellar",
-  "SHIB": "shiba-inu",
-  "APT": "aptos",
-  "USDT": "tether",
-  "USDC": "usd-coin"
+  BTC: 'bitcoin',
+  ETH: 'ethereum',
+  BNB: 'binancecoin',
+  SOL: 'solana',
+  XRP: 'ripple',
+  ADA: 'cardano',
+  DOGE: 'dogecoin',
+  TON: 'the-open-network',
+  DOT: 'polkadot',
+  AVAX: 'avalanche-2',
+  TRX: 'tron',
+  MATIC: 'matic-network',
+  LTC: 'litecoin',
+  BCH: 'bitcoin-cash',
+  UNI: 'uniswap',
+  LINK: 'chainlink',
+  ATOM: 'cosmos',
+  XLM: 'stellar',
+  SHIB: 'shiba-inu',
+  APT: 'aptos',
+  USDT: 'tether',
+  USDC: 'usd-coin'
 };
 
 // --- Storage ---
 function loadTrades() {
-  const stored = localStorage.getItem("fifoCryptoTrades");
+  const stored = localStorage.getItem('fifoCryptoTrades');
   trades = stored ? JSON.parse(stored) : [];
 }
-
 function saveTrades() {
-  localStorage.setItem("fifoCryptoTrades", JSON.stringify(trades));
+  localStorage.setItem('fifoCryptoTrades', JSON.stringify(trades));
 }
 
 // --- Rendering Trades ---
 function renderTrades() {
-  const tbody = document.querySelector("#tradesTable tbody");
-  tbody.innerHTML = "";
-  const sorted = [...trades].sort((a,b)=>a.date.localeCompare(b.date));
+  const tbody = document.querySelector('#tradesTable tbody');
+  tbody.innerHTML = '';
+  const sorted = [...trades].sort((a,b) => a.date.localeCompare(b.date));
   for (const t of sorted) {
-    const tr = document.createElement("tr");
-
+    const tr = document.createElement('tr');
     const fee = t.feeEur || 0;
     const gross = t.amount * t.priceEur;
-    const total = t.type === "BUY" ? gross + fee : gross - fee;
-
+    const total = t.type === 'BUY' ? gross + fee : gross - fee;
     tr.innerHTML = `
       <td>${t.date}</td>
       <td>${t.type}</td>
       <td>${t.asset}</td>
       <td>${t.amount}</td>
       <td>${t.priceEur}</td>
-      <td>${t.feeEur || ""}</td>
+      <td>${t.feeEur || 0}</td>
       <td>${total.toFixed(2)}</td>
       <td><button data-id="${t.id}" class="deleteBtn">Löschen</button></td>
     `;
     tbody.appendChild(tr);
   }
-
-  document.querySelectorAll(".deleteBtn").forEach(btn => {
-    btn.addEventListener("click", () => {
-      const id = btn.getAttribute("data-id");
+  document.querySelectorAll('.deleteBtn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const id = btn.getAttribute('data-id');
       trades = trades.filter(t => String(t.id) !== String(id));
       saveTrades();
       renderTrades();
@@ -341,16 +330,15 @@ function buildLots(trades, asset) {
   const buys = [];
   const relevant = trades
     .filter(t => t.asset === asset)
-    .sort((a,b)=>a.date.localeCompare(b.date));
-
+    .sort((a,b) => a.date.localeCompare(b.date));
   for (const t of relevant) {
-    if (t.type === "BUY") {
+    if (t.type === 'BUY') {
       buys.push({
         remainingAmount: t.amount,
         buyDate: t.date,
         costPerUnit: (t.priceEur * t.amount + (t.feeEur || 0)) / t.amount
       });
-    } else if (t.type === "SELL") {
+    } else if (t.type === 'SELL') {
       let remainingToSell = t.amount;
       for (const lot of buys) {
         if (remainingToSell <= 0) break;
@@ -368,10 +356,13 @@ function splitLotsByHaltefrist(lots, today) {
   const steuerpflichtig = [];
   for (const lot of lots) {
     const heldDays = (new Date(today) - new Date(lot.buyDate)) / (1000*60*60*24);
-    if (heldDays >= 365) frei.push(lot);
-    else steuerpflichtig.push(lot);
+    if (heldDays >= 365) {
+      frei.push(lot);
+    } else {
+      steuerpflichtig.push(lot);
+    }
   }
-  return { frei, steuerpflichtig };
+  return [frei, steuerpflichtig];
 }
 
 // --- Realisierter Gewinn/Verlust gesamt (FIFO über alle Sells) ---
@@ -379,94 +370,76 @@ function computeRealizedPnLAll() {
   const assets = [...new Set(trades.map(t => t.asset))];
   let realizedProfit = 0;
   let realizedCostBasis = 0;
-
   for (const asset of assets) {
     const buys = [];
     const relevant = trades
       .filter(t => t.asset === asset)
-      .sort((a,b)=>a.date.localeCompare(b.date));
-
+      .sort((a,b) => a.date.localeCompare(b.date));
     for (const t of relevant) {
-      if (t.type === "BUY") {
+      if (t.type === 'BUY') {
         buys.push({
           remainingAmount: t.amount,
           costPerUnit: (t.priceEur * t.amount + (t.feeEur || 0)) / t.amount
         });
-      } else if (t.type === "SELL") {
+      } else if (t.type === 'SELL') {
         let remainingToSell = t.amount;
         const sellProceedsTotal = t.priceEur * t.amount - (t.feeEur || 0);
         let costForThisSell = 0;
         let allocatedAmount = 0;
-
         while (remainingToSell > 1e-10 && buys.length > 0) {
           const lot = buys[0];
           const useAmount = Math.min(remainingToSell, lot.remainingAmount);
           const lotCost = useAmount * lot.costPerUnit;
           costForThisSell += lotCost;
           allocatedAmount += useAmount;
-
           lot.remainingAmount -= useAmount;
           remainingToSell -= useAmount;
-          if (lot.remainingAmount <= 1e-10) {
-            buys.shift();
-          }
+          if (lot.remainingAmount < 1e-10) buys.shift();
         }
-
         if (allocatedAmount > 0) {
-          const proceedsForAllocated =
-            sellProceedsTotal * (allocatedAmount / t.amount);
+          const proceedsForAllocated = sellProceedsTotal * (allocatedAmount / t.amount);
           realizedProfit += proceedsForAllocated - costForThisSell;
           realizedCostBasis += costForThisSell;
         }
       }
     }
   }
-
-  return { realizedProfit, realizedCostBasis };
+  return [realizedProfit, realizedCostBasis];
 }
 
 // --- Realisierte Gewinne/Verluste pro Jahr ---
 function computeYearlyPnL() {
   const yearlyPnL = {};
   const assets = [...new Set(trades.map(t => t.asset))];
-
   for (const asset of assets) {
     const buys = [];
     const relevant = trades
       .filter(t => t.asset === asset)
-      .sort((a,b)=>a.date.localeCompare(b.date));
-
+      .sort((a,b) => a.date.localeCompare(b.date));
     for (const t of relevant) {
-      if (t.type === "BUY") {
+      if (t.type === 'BUY') {
         buys.push({
           remainingAmount: t.amount,
           costPerUnit: (t.priceEur * t.amount + (t.feeEur || 0)) / t.amount
         });
-      } else if (t.type === "SELL") {
+      } else if (t.type === 'SELL') {
         let remainingToSell = t.amount;
         const sellProceedsTotal = t.priceEur * t.amount - (t.feeEur || 0);
         let costForThisSell = 0;
         let allocatedAmount = 0;
-
         while (remainingToSell > 1e-10 && buys.length > 0) {
           const lot = buys[0];
           const useAmount = Math.min(remainingToSell, lot.remainingAmount);
           const lotCost = useAmount * lot.costPerUnit;
           costForThisSell += lotCost;
           allocatedAmount += useAmount;
-
           lot.remainingAmount -= useAmount;
           remainingToSell -= useAmount;
-          if (lot.remainingAmount <= 1e-10) {
-            buys.shift();
-          }
+          if (lot.remainingAmount < 1e-10) buys.shift();
         }
-
         if (allocatedAmount > 0) {
-          const proceedsForAllocated =
-            sellProceedsTotal * (allocatedAmount / t.amount);
+          const proceedsForAllocated = sellProceedsTotal * (allocatedAmount / t.amount);
           const profitThisSell = proceedsForAllocated - costForThisSell;
-
           const year = String(t.date).slice(0,4);
           if (!yearlyPnL[year]) yearlyPnL[year] = 0;
           yearlyPnL[year] += profitThisSell;
@@ -481,27 +454,23 @@ function computeYearlyPnL() {
 function computeYearlyUnrealizedPnL() {
   const yearlyUnrealized = {};
   if (!trades.length) return yearlyUnrealized;
-
   const years = [...new Set(trades.map(t => String(t.date).slice(0,4)))];
-
   for (const year of years) {
     const cutoff = `${year}-12-31`;
     const assets = [...new Set(trades.map(t => t.asset))];
     let unrealizedForYear = 0;
-
     for (const asset of assets) {
       const relevant = trades
         .filter(t => t.asset === asset && t.date <= cutoff)
-        .sort((a,b)=>a.date.localeCompare(b.date));
-
+        .sort((a,b) => a.date.localeCompare(b.date));
       const buys = [];
       for (const t of relevant) {
-        if (t.type === "BUY") {
+        if (t.type === 'BUY') {
           buys.push({
             remainingAmount: t.amount,
             costPerUnit: (t.priceEur * t.amount + (t.feeEur || 0)) / t.amount
           });
-        } else if (t.type === "SELL") {
+        } else if (t.type === 'SELL') {
           let remainingToSell = t.amount;
           for (const lot of buys) {
             if (remainingToSell <= 0) break;
@@ -511,114 +480,98 @@ function computeYearlyUnrealizedPnL() {
           }
         }
       }
-
       const endLots = buys.filter(l => l.remainingAmount > 1e-10);
       if (!endLots.length) continue;
-
       const currentPrice = latestPrices[asset] || 0;
       if (!currentPrice) continue;
-
       let costBasis = 0;
       let currentValue = 0;
       for (const lot of endLots) {
         costBasis += lot.remainingAmount * lot.costPerUnit;
         currentValue += lot.remainingAmount * currentPrice;
       }
-
-      unrealizedForYear += (currentValue - costBasis);
+      unrealizedForYear += currentValue - costBasis;
     }
-
     yearlyUnrealized[year] = unrealizedForYear;
   }
-
   return yearlyUnrealized;
 }
 
 // --- Jahresauswertung rendern ---
 function renderYearlyPnL() {
-  const tbody = document.querySelector("#yearlyPnlTable tbody");
+  const tbody = document.querySelector('#yearlyPnlTable tbody');
   if (!tbody) return;
-  tbody.innerHTML = "";
-
+  tbody.innerHTML = '';
   const yearlyRealized = computeYearlyPnL();
   const yearlyUnrealized = computeYearlyUnrealizedPnL();
-
-  const years = [...new Set([
-    ...Object.keys(yearlyRealized),
-    ...Object.keys(yearlyUnrealized)
-  ])].sort();
-
+  const years = [...new Set([...Object.keys(yearlyRealized), ...Object.keys(yearlyUnrealized)])].sort();
   if (years.length === 0) {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td colspan="3">Noch keine Daten vorhanden.</td>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = '<td colspan="3">Noch keine Daten vorhanden.</td>';
     tbody.appendChild(tr);
     return;
   }
-
   for (const year of years) {
     const realized = yearlyRealized[year] || 0;
     const unrealized = yearlyUnrealized[year] || 0;
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${year}</td>
-      <td class="${realized >= 0 ? 'success' : 'danger'}">
-        ${realized.toFixed(2)} EUR
-      </td>
-      <td class="${unrealized >= 0 ? 'success' : 'danger'}">
-        ${unrealized.toFixed(2)} EUR
-      </td>
+      <td class="${realized >= 0 ? 'success' : 'danger'}">${realized.toFixed(2)} EUR</td>
+      <td class="${unrealized >= 0 ? 'success' : 'danger'}">${unrealized.toFixed(2)} EUR</td>
     `;
     tbody.appendChild(tr);
   }
 }
 
-// --- Positionen + Summen + realisierte Rendite ---
+// --- Positionen; Summen; realisierte Rendite ---
 function renderPositions() {
-  const todayInput = document.getElementById("today");
+  const todayInput = document.getElementById('today');
   const today = todayInput.value || new Date().toISOString().substring(0,10);
   todayInput.value = today;
 
   const assets = [...new Set(trades.map(t => t.asset))];
-  const tbody = document.querySelector("#positionsTable tbody");
-  tbody.innerHTML = "";
+  const tbody = document.querySelector('#positionsTable tbody');
+  tbody.innerHTML = '';
 
   let totalInvest = 0;
   let totalSells = 0;
-
-  // Summen Käufe/Verkäufe (historisch)
+  // Summen Käufe/Verkäufe historisch
   for (const t of trades) {
-    if (t.type === "BUY") {
+    if (t.type === 'BUY') {
       totalInvest += t.priceEur * t.amount + (t.feeEur || 0);
-    } else if (t.type === "SELL") {
+    } else if (t.type === 'SELL') {
       totalSells += t.priceEur * t.amount - (t.feeEur || 0);
     }
   }
 
-  // neuer Gesamtwert aller Bestände (nach aktuellem Kurs)
+  // neuer Gesamtwert aller Bestände nach aktuellem Kurs
   let totalCurrentValueAllAssets = 0;
 
   for (const asset of assets) {
     const lots = buildLots(trades, asset);
-    const { frei, steuerpflichtig } = splitLotsByHaltefrist(lots, today);
-    const total = lots.reduce((s,l)=>s+l.remainingAmount,0);
-    const freiAmount = frei.reduce((s,l)=>s+l.remainingAmount,0);
-    const steuerAmount = steuerpflichtig.reduce((s,l)=>s+l.remainingAmount,0);
+    const [frei, steuerpflichtig] = splitLotsByHaltefrist(lots, today);
+    const total = lots.reduce((s,l) => s + l.remainingAmount, 0);
+    const freiAmount = frei.reduce((s,l) => s + l.remainingAmount, 0);
+    const steuerAmount = steuerpflichtig.reduce((s,l) => s + l.remainingAmount, 0);
 
     const currentPrice = latestPrices[asset] || 0;
     const totalValue = currentPrice ? total * currentPrice : 0;
     const freiValue = currentPrice ? freiAmount * currentPrice : 0;
-
+    const steuerValue = currentPrice ? steuerAmount * currentPrice : 0;
     totalCurrentValueAllAssets += totalValue;
 
     const displayTotal = currentPrice
       ? `${total.toFixed(8)} (${totalValue.toFixed(2)} EUR)`
-      : `${total.toFixed(8)}`;
+      : total.toFixed(8);
     const displayFrei = currentPrice
       ? `${freiAmount.toFixed(8)} (${freiValue.toFixed(2)} EUR)`
-      : `${freiAmount.toFixed(8)}`;
-    const displaySteuer = `${steuerAmount.toFixed(8)}`;
+      : freiAmount.toFixed(8);
+    const displaySteuer = currentPrice
+      ? `${steuerAmount.toFixed(8)} (${steuerValue.toFixed(2)} EUR)`
+      : steuerAmount.toFixed(8);
 
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${asset}</td>
       <td>${displayTotal}</td>
@@ -628,90 +581,68 @@ function renderPositions() {
     tbody.appendChild(tr);
   }
 
-  const totalsInfo = document.getElementById("totalsInfo");
-  totalsInfo.textContent =
-    `Gesamtsumme Käufe (inkl. Gebühren): ${totalInvest.toFixed(2)} EUR | ` +
-    `Gesamtsumme Verkäufe (nach Gebühren): ${totalSells.toFixed(2)} EUR` +
-    (totalCurrentValueAllAssets > 0
-      ? ` | Gesamtwert Bestände (aktuell): ${totalCurrentValueAllAssets.toFixed(2)} EUR`
-      : "");
+  const totalsInfo = document.getElementById('totalsInfo');
+  totalsInfo.textContent = `Gesamtsumme Käufe (inkl. Gebühren): ${totalInvest.toFixed(2)} EUR | Gesamtsumme Verkäufe (nach Gebühren): ${totalSells.toFixed(2)} EUR`
+    + (totalCurrentValueAllAssets > 0 ? ` | Gesamtwert Bestände aktuell: ${totalCurrentValueAllAssets.toFixed(2)} EUR` : '');
 
-  const { realizedProfit, realizedCostBasis } = computeRealizedPnLAll();
-  const pnlInfo = document.getElementById("pnlInfo");
+  const [realizedProfit, realizedCostBasis] = computeRealizedPnLAll();
+  const pnlInfo = document.getElementById('pnlInfo');
   if (realizedCostBasis > 0) {
     const roi = (realizedProfit / realizedCostBasis) * 100;
-    pnlInfo.textContent =
-      `Realisierter Gewinn/Verlust gesamt (FIFO): ${realizedProfit.toFixed(2)} EUR ` +
-      `(Anschaffungskosten der verkauften Coins: ${realizedCostBasis.toFixed(2)} EUR, Rendite: ${roi.toFixed(2)} %)`;
+    pnlInfo.textContent = `Realisierter Gewinn/Verlust gesamt (FIFO): ${realizedProfit.toFixed(2)} EUR | Anschaffungskosten der verkauften Coins: ${realizedCostBasis.toFixed(2)} EUR, Rendite: ${roi.toFixed(2)}%`;
   } else {
-    pnlInfo.textContent = "Realisierter Gewinn/Verlust gesamt (FIFO): noch keine Verkäufe.";
+    pnlInfo.textContent = 'Realisierter Gewinn/Verlust gesamt (FIFO): noch keine Verkäufe.';
   }
-
   renderYearlyPnL();
 }
 
 // --- Portfolio-Wert & unrealisierte Rendite (nur Bestand) ---
 function renderPortfolioValues() {
-  const tbody = document.querySelector("#valueTable tbody");
-  tbody.innerHTML = "";
-
+  const tbody = document.querySelector('#valueTable tbody');
+  tbody.innerHTML = '';
   const assets = [...new Set(trades.map(t => t.asset))];
   let totalCostBasis = 0;
   let totalCurrentValue = 0;
-
   for (const asset of assets) {
     const lots = buildLots(trades, asset);
     if (lots.length === 0) continue;
-
     const holdingAmount = lots.reduce((s, l) => s + l.remainingAmount, 0);
     const costBasis = lots.reduce((s, l) => s + l.remainingAmount * l.costPerUnit, 0);
     const currentPrice = latestPrices[asset] || 0;
     const currentValue = holdingAmount * currentPrice;
     const unrealizedPnL = currentValue - costBasis;
     const roi = costBasis > 0 ? (unrealizedPnL / costBasis) * 100 : 0;
-
     totalCostBasis += costBasis;
     totalCurrentValue += currentValue;
-
-    const tr = document.createElement("tr");
+    const tr = document.createElement('tr');
     tr.innerHTML = `
       <td>${asset}</td>
       <td>${holdingAmount.toFixed(8)}</td>
       <td>${costBasis.toFixed(2)} EUR</td>
       <td>${currentValue.toFixed(2)} EUR</td>
       <td class="${unrealizedPnL >= 0 ? 'success' : 'danger'}">${unrealizedPnL.toFixed(2)} EUR</td>
-      <td class="${roi >= 0 ? 'success' : 'danger'}">${roi.toFixed(2)} %</td>
+      <td class="${roi >= 0 ? 'success' : 'danger'}">${roi.toFixed(2)}%</td>
     `;
     tbody.appendChild(tr);
   }
-
   const totalUnrealizedPnL = totalCurrentValue - totalCostBasis;
   const totalRoi = totalCostBasis > 0 ? (totalUnrealizedPnL / totalCostBasis) * 100 : 0;
-
-  const valueTotals = document.getElementById("valueTotals");
-  valueTotals.innerHTML =
-    `<strong>Gesamt:</strong> ` +
-    `Eingesetztes Kapital (Bestände): ${totalCostBasis.toFixed(2)} EUR | ` +
-    `Aktueller Wert: ${totalCurrentValue.toFixed(2)} EUR | ` +
-    `Unrealisierter Gewinn: <span class="${totalUnrealizedPnL >= 0 ? 'success' : 'danger'}">${totalUnrealizedPnL.toFixed(2)} EUR</span> | ` +
-    `Rendite: <span class="${totalRoi >= 0 ? 'success' : 'danger'}">${totalRoi.toFixed(2)} %</span>`;
-
+  const valueTotals = document.getElementById('valueTotals');
+  valueTotals.innerHTML = `<strong>Gesamt:</strong> Eingesetztes Kapital (Bestände): ${totalCostBasis.toFixed(2)} EUR | Aktueller Wert: ${totalCurrentValue.toFixed(2)} EUR | Unrealisierter Gewinn: <span class="${totalUnrealizedPnL >= 0 ? 'success' : 'danger'}">${totalUnrealizedPnL.toFixed(2)} EUR</span> | Rendite: <span class="${totalRoi >= 0 ? 'success' : 'danger'}">${totalRoi.toFixed(2)}%</span>`;
   // Kurse beeinflussen auch Jahres-Unrealized-PnL
   renderYearlyPnL();
 }
 
 // --- Verkaufssimulation ---
 function simulateSale() {
-  const simTodayInput = document.getElementById("simToday");
+  const simTodayInput = document.getElementById('simToday');
   const simToday = simTodayInput.value || new Date().toISOString().substring(0,10);
   simTodayInput.value = simToday;
-
-  const asset = document.getElementById("simAsset").value.trim().toUpperCase();
-  const sellAmount = parseFloat(document.getElementById("simAmount").value) || 0;
-  const sellPrice = parseFloat(document.getElementById("simPrice").value) || 0;
-
+  const asset = document.getElementById('simAsset').value.trim().toUpperCase();
+  const sellAmount = parseFloat(document.getElementById('simAmount').value) || 0;
+  const sellPrice = parseFloat(document.getElementById('simPrice').value) || 0;
   const lots = buildLots(trades, asset);
-  const { frei, steuerpflichtig } = splitLotsByHaltefrist(lots, simToday);
+  const [frei, steuerpflichtig] = splitLotsByHaltefrist(lots, simToday);
 
   let remainingToSell = sellAmount;
   let taxFreeSold = 0;
@@ -724,7 +655,6 @@ function simulateSale() {
     taxFreeSold += useAmount;
     remainingToSell -= useAmount;
   }
-
   for (const lot of steuerpflichtig) {
     if (remainingToSell <= 0) break;
     const useAmount = Math.min(remainingToSell, lot.remainingAmount);
@@ -736,9 +666,8 @@ function simulateSale() {
   const taxableProceeds = taxableSold * sellPrice;
   const taxableProfit = taxableProceeds - taxableCostBasis;
 
-  const resultDiv = document.getElementById("simResult");
-  resultDiv.innerHTML = `
-    <strong>Simulationsergebnis:</strong><br>
+  const resultDiv = document.getElementById('simResult');
+  resultDiv.innerHTML = `<strong>Simulationsergebnis:</strong><br>
     Steuerfrei verkauft: ${taxFreeSold.toFixed(8)} ${asset}<br>
     Steuerpflichtig verkauft: ${taxableSold.toFixed(8)} ${asset}<br>
     Steuerpflichtiger Gewinn: ${taxableProfit.toFixed(2)} EUR (ohne 1.000 EUR Freigrenze)<br>
@@ -748,58 +677,46 @@ function simulateSale() {
 
 // --- CoinGecko Kurse ---
 async function fetchCurrentPrices() {
-  const baseUrl = document.getElementById("priceApiBase").value.trim();
-  const currency = document.getElementById("priceCurrency").value.trim();
+  const baseUrl = document.getElementById('priceApiBase').value.trim();
+  const currency = document.getElementById('priceCurrency').value.trim();
   const assets = [...new Set(trades.map(t => t.asset))];
-
   const ids = assets
     .map(a => assetIdMap[a])
     .filter(id => id !== undefined);
-
   if (ids.length === 0) {
-    document.getElementById("pricesInfo").textContent = "Keine unterstützten Assets gefunden.";
+    document.getElementById('pricesInfo').textContent = 'Keine unterstützten Assets gefunden.';
     return;
   }
-
-  const url = `${baseUrl}/simple/price?ids=${ids.join(",")}&vs_currencies=${currency}`;
-
+  const url = `${baseUrl}/simple/price?ids=${ids.join(',')}&vs_currencies=${currency}`;
   try {
     const response = await fetch(url);
     const data = await response.json();
-
     for (const [symbol, geckoId] of Object.entries(assetIdMap)) {
       if (data[geckoId] && data[geckoId][currency]) {
         latestPrices[symbol] = data[geckoId][currency];
       }
     }
-
     const priceStrings = Object.entries(latestPrices)
       .map(([sym, price]) => `${sym}: ${price.toFixed(2)} ${currency.toUpperCase()}`)
-      .join(" | ");
-
-    document.getElementById("pricesInfo").innerHTML = `<strong>Kurse:</strong> ${priceStrings}`;
-
+      .join(' | ');
+    document.getElementById('pricesInfo').innerHTML = `<strong>Kurse:</strong> ${priceStrings}`;
     renderPortfolioValues();
     renderPositions(); // neu: Positions-Tabelle mit Kurswerten aktualisieren
-
-    const simAsset = document.getElementById("simAsset").value.trim().toUpperCase();
+    const simAsset = document.getElementById('simAsset').value.trim().toUpperCase();
     if (latestPrices[simAsset]) {
-      document.getElementById("simPrice").value = latestPrices[simAsset].toFixed(2);
+      document.getElementById('simPrice').value = latestPrices[simAsset].toFixed(2);
     }
-
   } catch (error) {
-    document.getElementById("pricesInfo").textContent = `Fehler: ${error.message}`;
+    document.getElementById('pricesInfo').textContent = 'Fehler: ' + error.message;
   }
 }
 
 function updatePriceInterval() {
-  const ms = parseInt(document.getElementById("priceInterval").value, 10);
-
+  const ms = parseInt(document.getElementById('priceInterval').value, 10);
   if (priceIntervalHandle) {
     clearInterval(priceIntervalHandle);
     priceIntervalHandle = null;
   }
-
   if (ms > 0) {
     priceIntervalHandle = setInterval(fetchCurrentPrices, ms);
   }
@@ -808,9 +725,9 @@ function updatePriceInterval() {
 // --- JSON Export/Import ---
 function downloadJson(data, filename) {
   const jsonString = JSON.stringify(data, null, 2);
-  const blob = new Blob([jsonString], { type: "application/json" });
+  const blob = new Blob([jsonString], {type: 'application/json'});
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);
@@ -825,10 +742,9 @@ function importJsonFile(file) {
     try {
       const imported = JSON.parse(e.target.result);
       if (!Array.isArray(imported)) {
-        alert("Ungültiges Format: Erwartet wird ein Array.");
+        alert('Ungültiges Format. Erwartet wird ein Array.');
         return;
       }
-
       const normalized = imported.map(t => ({
         id: t.id || Date.now() + Math.random(),
         date: t.date,
@@ -836,9 +752,8 @@ function importJsonFile(file) {
         asset: String(t.asset).toUpperCase(),
         amount: parseFloat(t.amount),
         priceEur: parseFloat(t.priceEur),
-        feeEur: parseFloat(t.feeEur || 0)
+        feeEur: parseFloat(t.feeEur) || 0
       }));
-
       if (confirm(`${normalized.length} Trades importieren? (Überschreibt aktuelle Daten)`)) {
         trades = normalized;
         saveTrades();
@@ -846,26 +761,26 @@ function importJsonFile(file) {
         renderPositions();
         renderPortfolioValues();
         renderYearlyPnL();
-        document.getElementById("importExportStatus").textContent = `✓ ${normalized.length} Trades importiert.`;
+        document.getElementById('importExportStatus').textContent = `${normalized.length} Trades importiert.`;
       }
     } catch (err) {
-      alert("JSON-Parsing-Fehler: " + err.message);
+      alert('JSON-Parsing-Fehler: ' + err.message);
     }
   };
   reader.readAsText(file);
 }
 
 // --- Event Listeners ---
-document.getElementById("tradeForm").addEventListener("submit", (e) => {
+document.getElementById('tradeForm').addEventListener('submit', (e) => {
   e.preventDefault();
   const trade = {
     id: Date.now(),
-    date: document.getElementById("date").value,
-    type: document.getElementById("type").value,
-    asset: document.getElementById("asset").value.trim().toUpperCase(),
-    amount: parseFloat(document.getElementById("amount").value),
-    priceEur: parseFloat(document.getElementById("price").value),
-    feeEur: parseFloat(document.getElementById("fee").value) || 0
+    date: document.getElementById('date').value,
+    type: document.getElementById('type').value,
+    asset: document.getElementById('asset').value.trim().toUpperCase(),
+    amount: parseFloat(document.getElementById('amount').value),
+    priceEur: parseFloat(document.getElementById('price').value),
+    feeEur: parseFloat(document.getElementById('fee').value) || 0
   };
   trades.push(trade);
   saveTrades();
@@ -874,11 +789,11 @@ document.getElementById("tradeForm").addEventListener("submit", (e) => {
   renderPortfolioValues();
   renderYearlyPnL();
   e.target.reset();
-  document.getElementById("date").value = new Date().toISOString().substring(0,10);
+  document.getElementById('date').value = new Date().toISOString().substring(0,10);
 });
 
-document.getElementById("clearAll").addEventListener("click", () => {
-  if (confirm("Wirklich ALLE Trades löschen?")) {
+document.getElementById('clearAll').addEventListener('click', () => {
+  if (confirm('Wirklich ALLE Trades löschen?')) {
     trades = [];
     saveTrades();
     renderTrades();
@@ -888,35 +803,44 @@ document.getElementById("clearAll").addEventListener("click", () => {
   }
 });
 
-document.getElementById("exportJson").addEventListener("click", () => {
-  downloadJson(trades, "crypto-trades-export.json");
-  document.getElementById("importExportStatus").textContent = "✓ JSON exportiert.";
+document.getElementById('exportJson').addEventListener('click', () => {
+  downloadJson(trades, 'crypto-trades-export.json');
+  document.getElementById('importExportStatus').textContent = 'JSON exportiert.';
 });
 
-document.getElementById("importJson").addEventListener("click", () => {
-  document.getElementById("importFile").click();
+document.getElementById('importJson').addEventListener('click', () => {
+  document.getElementById('importFile').click();
 });
 
-document.getElementById("importFile").addEventListener("change", (e) => {
+document.getElementById('importFile').addEventListener('change', (e) => {
   const file = e.target.files[0];
-  if (file) {
-    importJsonFile(file);
-  }
-  e.target.value = "";
+  if (file) importJsonFile(file);
+  e.target.value = '';
 });
 
-document.getElementById("refreshPositions").addEventListener("click", renderPositions);
-document.getElementById("runSimulation").addEventListener("click", simulateSale);
-document.getElementById("fetchPrices").addEventListener("click", fetchCurrentPrices);
-document.getElementById("priceInterval").addEventListener("change", updatePriceInterval);
+document.getElementById('refreshPositions').addEventListener('click', () => {
+  renderPositions();
+});
+
+document.getElementById('runSimulation').addEventListener('click', () => {
+  simulateSale();
+});
+
+document.getElementById('fetchPrices').addEventListener('click', () => {
+  fetchCurrentPrices();
+});
+
+document.getElementById('priceInterval').addEventListener('change', () => {
+  updatePriceInterval();
+});
 
 // --- Initialisierung ---
 function init() {
   loadTrades();
   const today = new Date().toISOString().substring(0,10);
-  document.getElementById("date").value = today;
-  document.getElementById("today").value = today;
-  document.getElementById("simToday").value = today;
+  document.getElementById('date').value = today;
+  document.getElementById('today').value = today;
+  document.getElementById('simToday').value = today;
   renderTrades();
   renderPositions();
   renderPortfolioValues();
@@ -926,7 +850,5 @@ function init() {
 
 init();
 </script>
-
 </body>
 </html>
-
